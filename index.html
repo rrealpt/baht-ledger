@@ -403,40 +403,63 @@ function render(){
 }
 
 function renderOverview(){
-  const d=new Date(), y=d.getFullYear(), m=d.getMonth(), day=d.getDate(), dim=daysIn(y,m);
+  const d=new Date(), y=d.getFullYear(), m=d.getMonth(), day=d.getDate(), dim=daysIn(y,m), today=todayStr();
   const budget=Number(S.profile.budget)||0;
-  const daily=budget/dim;
   const exp=ofType("expense"), monthExp=exp.filter(t=>inMonth(t,y,m));
   const spentMonth=total(monthExp);
-  const spentToday=total(exp.filter(t=>t.date===todayStr()));
-  const leftToday=daily-spentToday;
-  const diff=budget-spentMonth;
-  const pace=daily*day, paceDiff=pace-spentMonth;
+  const spentToday=total(monthExp.filter(t=>t.date===today));
+  const expOther=spentMonth-spentToday;
   const incMonth=total(ofType("income").filter(t=>inMonth(t,y,m)));
   const saved=total(ofType("saving")), invested=total(ofType("invest"));
   const savedMonth=total(ofType("saving").filter(t=>inMonth(t,y,m)))+total(ofType("invest").filter(t=>inMonth(t,y,m)));
-  const pct=budget>0?Math.min(100,spentMonth/budget*100):0;
-  const pacePct=budget>0?Math.min(100,pace/budget*100):0;
+  const ym=y+"-"+pad(m+1);
+  const planDue=S.plans.filter(p=>(p.date||"")<=ym+"-31").reduce((s,p)=>s+(Number(p.amount)||0),0);
+  // Daily budget: income − saved/invested − expenses (other days) − planned this month, spread over the days left (today included)
+  const daysLeft=dim-day+1;
+  const avail=incMonth-savedMonth-expOther-planDue;
+  const daily=avail/daysLeft;
+  const leftToday=daily-spentToday;
+  const tomorrow=daysLeft>1?(avail-spentToday)/(daysLeft-1):null;
+  // Monthly budget card: budget − saved/invested this month − spending
+  const spendable=budget-savedMonth;
+  const diff=spendable-spentMonth;
+  const pace=Math.max(0,spendable)/dim*day, paceDiff=pace-spentMonth;
+  const pct=spendable>0?Math.min(100,spentMonth/spendable*100):100;
+  const pacePct=spendable>0?Math.min(100,pace/spendable*100):0;
 
-  const noBudget = budget<=0 ? `<div class="card"><div class="label">Monthly budget not set</div><p class="small muted" style="margin:6px 0 12px">Daily budget = monthly budget ÷ days in the month. Set a budget to see it.</p><button class="btn" type="button" data-act="settings">Set monthly budget</button></div>` : "";
-
-  return `<div class="stack">
-    ${noBudget}
-    ${budget>0?`<div class="card">
-      <div class="label">Daily budget</div>
-      <div class="big num">${baht(daily)}</div>
-      <div class="small muted">${baht(budget,1)} ÷ ${dim} days in ${MONTHS[m]}</div>
+  const line=(label,v,sign,cls)=>`<div class="row"><span class="muted">${label}</span><span class="num ${cls||""}">${sign}${baht(Math.abs(v)).replace("−","")}</span></div>`;
+  const dailyCard = incMonth<=0 ? `<div class="card"><div class="label">Daily budget</div><p class="small muted" style="margin:6px 0 12px">Daily budget = this month's income − savings − expenses − planned expenses, ÷ days left in ${MONTHS[m]}. Add this month's salary to see it.</p><button class="btn" type="button" data-act="addincome">Add ${MONTHS[m]} salary</button></div>`
+  : `<div class="card">
+      <div class="label">Daily budget · ${daysLeft} day${daysLeft>1?"s":""} left in ${MONTHS[m]}</div>
+      <div class="big num ${daily<0?"neg":""}">${baht(daily)}</div>
+      <div class="small muted">${daily<0?"Your plans already go past this month's income":"per day from today until "+dim+" "+MONTHS[m].slice(0,3)}</div>
       <div class="kv">
+        ${line("Income this month",incMonth,"+","pos")}
+        ${line("Saved + invested",savedMonth,savedMonth<0?"+":"−")}
+        ${line("Expenses (other days)",expOther,"−","neg")}
+        ${planDue?line("Planned by "+dim+" "+MONTHS[m].slice(0,3),planDue,"−","neg"):""}
+        <div class="row" style="border-top:1px solid var(--line);padding-top:8px"><strong>Left for the month</strong><strong class="num ${avail>=0?"":"neg"}">${baht(avail)}</strong></div>
+        <div class="row"><span class="muted">÷ ${daysLeft} day${daysLeft>1?"s":""} (today included)</span><span class="num">${baht(daily)}/day</span></div>
+      </div>
+      <div class="kv" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
         <div class="row"><span class="muted">Spent today</span><span class="num">${baht(spentToday)}</span></div>
         <div class="row"><span class="muted">${leftToday>=0?"Left today":"Over today"}</span><span class="num ${leftToday>=0?"pos":"neg"}">${baht(Math.abs(leftToday))}</span></div>
+        ${tomorrow!=null?`<div class="row"><span class="muted">From tomorrow</span><span class="num ${tomorrow>=0?"":"neg"}">${baht(tomorrow)}/day</span></div>`:""}
       </div>
-    </div>
-    <div class="card">
+    </div>`;
+
+  return `<div class="stack">
+    ${dailyCard}
+    ${budget>0?`<div class="card">
       <div class="row"><div class="label">${MONTHS[m]} budget</div><span class="pill ${diff>=0?"pos":"neg"}">${diff>=0?"Under":"Over"} budget</span></div>
       <div class="big num ${diff>=0?"":"neg"}">${baht(Math.abs(diff))}</div>
-      <div class="small muted" style="margin-bottom:10px">${diff>=0?"remaining":"over"} · spent ${baht(spentMonth)} of ${baht(budget,1)}</div>
-      <div class="bar" aria-label="Spent ${Math.round(pct)}% of budget"><i class="${spentMonth>budget?"over":""}" style="width:${pct}%"></i><b style="left:${pacePct}%" title="Expected by today"></b></div>
+      <div class="small muted" style="margin-bottom:10px">${diff>=0?"remaining":"over"} · spent ${baht(spentMonth)} of ${baht(spendable)}</div>
+      <div class="bar" aria-label="Spent ${Math.round(pct)}% of budget"><i class="${diff<0?"over":""}" style="width:${pct}%"></i><b style="left:${pacePct}%" title="Expected by today"></b></div>
       <div class="kv">
+        <div class="row"><span class="muted">Monthly budget</span><span class="num">${baht(budget)}</span></div>
+        <div class="row"><span class="muted">Saved + invested</span><span class="num">${savedMonth<0?"+":"−"}${baht(Math.abs(savedMonth))}</span></div>
+        <div class="row"><span class="muted">Spent</span><span class="num neg">−${baht(spentMonth)}</span></div>
+        <div class="row" style="border-top:1px solid var(--line);padding-top:8px"><strong>${diff>=0?"Remaining":"Over budget"}</strong><strong class="num ${diff>=0?"pos":"neg"}">${baht(Math.abs(diff))}</strong></div>
         <div class="row"><span class="muted">Expected by today (day ${day})</span><span class="num">${baht(pace)}</span></div>
         <div class="row"><span class="muted">${paceDiff>=0?"Under pace by":"Over pace by"}</span><span class="num ${paceDiff>=0?"pos":"neg"}">${baht(Math.abs(paceDiff))}</span></div>
       </div>
@@ -569,7 +592,7 @@ function renderFlow(type){
     extra=`<div class="small muted">Average ${baht(monthsElapsed?tot/monthsElapsed:0)} per month over ${monthsElapsed} month${monthsElapsed===1?"":"s"}</div>`;
   } else if(type==="expense"){
     const b=Number(S.profile.budget)||0;
-    if(b>0){const d=b-tot;extra=`<div style="margin-top:6px"><span class="pill ${d>=0?"pos":"neg"}">${baht(Math.abs(d))} ${d>=0?"under":"over"} budget</span></div>`}
+    if(b>0){const sv=total(ofType("saving").filter(t=>inMonth(t,v.y,v.m)))+total(ofType("invest").filter(t=>inMonth(t,v.y,v.m)));const d=b-sv-tot;extra=`<div style="margin-top:6px"><span class="pill ${d>=0?"pos":"neg"}">${baht(Math.abs(d))} ${d>=0?"under":"over"} budget</span></div>`}
   }
   return `<div class="stack">
     <div class="seg" role="group" aria-label="Period"><button type="button" data-mode="month" aria-pressed="${isM}">Monthly</button><button type="button" data-mode="year" aria-pressed="${!isM}">Yearly</button></div>
@@ -608,8 +631,8 @@ function renderSavings(){
 /* ---------- entry sheet ---------- */
 const host=document.getElementById("sheetHost");
 function closeSheet(){host.innerHTML=""}
-function openEntry(existing){
-  const defaultType = existing?existing.type : ({income:"income",expense:"expense",savings:"saving"}[S.tab]||"expense");
+function openEntry(existing,preset){
+  const defaultType = existing?existing.type : (preset||{income:"income",expense:"expense",savings:"saving"}[S.tab]||"expense");
   const st = existing?clone(existing):{id:null,type:defaultType,amount:"",dir:"in",category:"",date:todayStr(),note:""};
   let confirmDel=false;
   function draw(){
@@ -658,7 +681,7 @@ function openSettings(){
   host.innerHTML=`<div class="scrim" data-close="1"><form class="sheet stack" id="setForm" novalidate>
     <div class="row"><h2>Settings</h2><button type="button" class="iconbtn" data-close="1">Close</button></div>
     <label class="field"><span>Monthly budget (฿)</span><input id="s-budget" class="amt" inputmode="decimal" value="${p.budget||""}" placeholder="0"></label>
-    <p class="small muted" style="margin:-4px 0 0">Daily budget = this ÷ days in the current month.</p>
+    <p class="small muted" style="margin:-4px 0 0">Used for the monthly budget card: budget − savings − spending. Daily budget comes from your income, savings and expenses.</p>
     ${["expense","income","saving","invest"].map(t=>`<label class="field"><span>${TYPE_LABEL[t]} categories, comma separated</span><textarea id="s-cat-${t}">${esc(cats(t).join(", "))}</textarea></label>`).join("")}
     <p class="small muted" style="margin:0">Renaming a category does not change past entries.</p>
     <div class="field"><span>Google Sheet</span>
@@ -694,6 +717,7 @@ main.addEventListener("click",e=>{
   const t=e.target.closest("[data-edit],[data-plan],[data-mode],[data-step],[data-month],[data-sf],[data-act]"); if(!t)return;
   if(t.dataset.act==="settings"){openSettings();return}
   if(t.dataset.act==="addplan"){openPlan(null);return}
+  if(t.dataset.act==="addincome"){openEntry(null,"income");return}
   if(t.dataset.act==="toggleplans"){S.showAllPlans=!S.showAllPlans;render();return}
   if(t.dataset.plan){const p=S.plans.find(r=>r.id===t.dataset.plan);if(p)openPlan(p);return}
   if(t.dataset.edit){const x=S.tx.find(r=>r.id===t.dataset.edit);if(x)openEntry(x);return}
