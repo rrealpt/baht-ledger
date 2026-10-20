@@ -25,15 +25,16 @@ img{max-width:100%}[hidden]{display:none!important}
   --display:"Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
   --body:"Figtree", -apple-system, "Segoe UI", sans-serif;
   --r:14px;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948; --s-other:#a3aaa6;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0E1412; --surface:#17201C; --fg:#E7EEEB; --muted:#93A29C; --line:#28332F;
   --accent:#5EC2A2; --accent-fg:#0B1512; --accent-soft:#1B3A30;
-  --pos:#5CC98C; --pos-soft:#17342A; --neg:#F07B65; --neg-soft:#3A211B; --warn:#E3A84A; color-scheme:dark}}
+  --pos:#5CC98C; --pos-soft:#17342A; --neg:#F07B65; --neg-soft:#3A211B; --warn:#E3A84A; --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767; --s-other:#5d6863; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0E1412; --surface:#17201C; --fg:#E7EEEB; --muted:#93A29C; --line:#28332F;
   --accent:#5EC2A2; --accent-fg:#0B1512; --accent-soft:#1B3A30;
-  --pos:#5CC98C; --pos-soft:#17342A; --neg:#F07B65; --neg-soft:#3A211B; --warn:#E3A84A; color-scheme:dark}
+  --pos:#5CC98C; --pos-soft:#17342A; --neg:#F07B65; --neg-soft:#3A211B; --warn:#E3A84A; --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767; --s-other:#5d6863; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-tap-highlight-color:transparent}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -94,7 +95,7 @@ header.top .sub{color:var(--muted);font-size:13px}
 .chart rect.b.cur{fill:var(--fg)}
 .chart line{stroke:var(--line)}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
 nav.tabs button{border:0;background:none;padding:9px 0 10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted)}
 nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 nav.tabs button[aria-current="page"]{color:var(--accent)}
@@ -116,6 +117,48 @@ nav.tabs button[aria-current="page"]{color:var(--accent)}
 .btn.danger{background:var(--neg-soft);color:var(--neg)}
 .err{color:var(--neg);font-size:13px;min-height:1em}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(144px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:14px;z-index:30;max-width:calc(100% - 32px)}
+
+/* analytics */
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 6px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;flex:none}
+.sw.bar-sw{background:var(--s1)} .sw.ln6{height:2px;width:14px;border-radius:1px;background:var(--s2)} .sw.ln12{height:2px;width:14px;border-radius:1px;background:var(--fg)}
+.chart-box{position:relative}
+.chart-box svg{width:100%;height:auto;display:block;overflow:visible}
+.chart-box text,.facet text{fill:var(--muted);font-family:var(--body);font-size:9.5px;font-variant-numeric:tabular-nums}
+.chart-box text.sel{fill:var(--fg);font-weight:700}
+.chart-box .grid,.facet .grid{stroke:var(--line);stroke-width:1}
+.chart-box .bar{fill:var(--s1)} .chart-box .bar.dim{opacity:.45}
+.chart-box .avg6{fill:none;stroke:var(--s2);stroke-width:2;stroke-linejoin:round}
+.chart-box .avg12{fill:none;stroke:var(--fg);stroke-width:2;stroke-linejoin:round;opacity:.7}
+.chart-box .hit{fill:transparent;cursor:pointer}
+.chart-box .hit.on{fill:var(--fg);opacity:.06}
+.chart-box .seg{stroke:var(--surface);stroke-width:2;cursor:pointer}
+.chart-box .seg.on{opacity:.8}
+.chart-box .dn-big{fill:var(--fg);font-family:var(--display);font-size:17px;font-weight:700}
+.tip{position:absolute;background:var(--fg);color:var(--bg);font-size:12px;line-height:1.35;padding:6px 9px;border-radius:8px;pointer-events:none;max-width:min(240px,calc(100% - 8px));z-index:2}
+.donut-wrap{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.donut-wrap .chart-box{width:min(190px,70%);margin:0 auto}
+.donut-wrap>*{min-width:0}
+.lg-list{display:flex;flex-direction:column;gap:8px;font-size:13px}
+.lg-row{display:grid;grid-template-columns:10px 1fr auto 34px;gap:8px;align-items:center}
+.lg-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg-pct{text-align:right}
+.facets{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.facet{border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.facet svg{width:100%;height:auto;display:block}
+.facet-name{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.facet-v{font-weight:700;font-size:13px}
+.facet .cum{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.facet .avgref{stroke:var(--muted);stroke-width:1.5;opacity:.8}
+.facet .endpt{stroke:var(--surface);stroke-width:2}
+.tbl-wrap{overflow-x:auto;margin:0 -4px}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.tbl th{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);text-align:right;padding:6px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl td{padding:8px 3px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:0}
+@media (max-width:360px){.facets{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .22s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.6}}}
 </style>
 </head>
@@ -136,6 +179,7 @@ nav.tabs button[aria-current="page"]{color:var(--accent)}
   <button type="button" data-tab="income"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg>Income</button>
   <button type="button" data-tab="expense"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg>Expense</button>
   <button type="button" data-tab="savings"><svg viewBox="0 0 24 24"><path d="M4 10h16v10H4zM4 10l8-6 8 6M9 14v3M15 14v3"/></svg>Savings</button>
+  <button type="button" data-tab="analytics"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analytics</button>
 </div></nav>
 
 <div id="sheetHost"></div>
@@ -160,7 +204,7 @@ const now = new Date();
 const S = {
   ready:false, mode:"loading", profile:clone(DEFAULT_PROFILE), tx:[], plans:[], showAllPlans:false,
   tab:"overview",
-  view:{income:{mode:"month",y:now.getFullYear(),m:now.getMonth()}, expense:{mode:"month",y:now.getFullYear(),m:now.getMonth()}},
+  view:{income:{mode:"month",y:now.getFullYear(),m:now.getMonth()}, expense:{mode:"month",y:now.getFullYear(),m:now.getMonth()}, analytics:{mode:"month",y:now.getFullYear(),m:now.getMonth()}},
   savFilter:"all"
 };
 let store = null;
@@ -382,7 +426,7 @@ async function initStore(){
 const main=document.getElementById("main");
 function render(){
   document.querySelectorAll("nav.tabs button").forEach(b=>{ if(b.dataset.tab===S.tab)b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current") });
-  document.getElementById("title").textContent = {overview:"Overview",income:"Income",expense:"Expense",savings:"Savings"}[S.tab];
+  document.getElementById("title").textContent = {overview:"Overview",income:"Income",expense:"Expense",savings:"Savings",analytics:"Analytics"}[S.tab];
   const d=new Date();
   document.getElementById("subtitle").textContent = d.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
   const sy=S.sync, hm=sy.at?new Date(sy.at).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}):null, np=pend().length;
@@ -399,7 +443,8 @@ function render(){
   if(S.setup==="sheet"){main.innerHTML=`<form class="card stack" id="sheetForm" novalidate><div class="label">Connect your sheet</div><p style="margin:0">Paste the link to your <b>Baht Ledger</b> Google Sheet. It's kept on this phone only, not in the app's code.</p><label class="field"><span>Google Sheet link</span><input id="sheetLink" autocomplete="off" placeholder="https://docs.google.com/spreadsheets/d/…"></label><div class="err" id="sheetErr"></div><button class="btn" type="submit">Connect sheet</button></form>`;
     document.getElementById("sheetForm").onsubmit=e=>{e.preventDefault();const id=parseSheetId(document.getElementById("sheetLink").value);if(!id){document.getElementById("sheetErr").textContent="That doesn't look like a Google Sheet link. Copy it from the sheet's address bar.";return}store.setSheet(id)};return}
   if(!S.ready){main.innerHTML='<div class="card muted">Loading your ledger…</div>';return}
-  main.innerHTML = S.tab==="overview"?renderOverview() : S.tab==="savings"?renderSavings() : renderFlow(S.tab);
+  main.innerHTML = S.tab==="overview"?renderOverview() : S.tab==="savings"?renderSavings() : S.tab==="analytics"?renderAnalytics() : renderFlow(S.tab);
+  if(S.tab==="analytics") bindTips();
 }
 
 function renderOverview(){
@@ -486,6 +531,134 @@ function renderOverview(){
       </div>
     </div>
   </div>`;
+}
+
+/* ---------- analytics ---------- */
+const SERIES_N = 8;
+function mKey(y,m){ const d=new Date(y,m,1); return d.getFullYear()+"-"+pad(d.getMonth()+1) }
+function mShift(y,m,k){ const d=new Date(y,m+k,1); return {y:d.getFullYear(),m:d.getMonth()} }
+function catSlot(c){ const l=cats("expense"); const i=l.indexOf(c); return i>=0 && i<SERIES_N ? i+1 : 0 }   // colour follows the category, never its rank
+function catColor(c){ const s=catSlot(c); return s?`var(--s${s})`:"var(--s-other)" }
+function expMonth(key){ const o={}; let t=0; ofType("expense").forEach(x=>{ if(x.date&&x.date.slice(0,7)===key){ const a=Number(x.amount)||0; o[x.category]=(o[x.category]||0)+a; t+=a } }); return {byCat:o,total:t} }
+function firstKey(){ let f=null; ofType("expense").forEach(x=>{ if(x.date&&(!f||x.date<f)) f=x.date }); return f?f.slice(0,7):null }
+// Average of up to n complete months before (y,m), counting only months since your first expense.
+function avgBefore(y,m,n,cat){
+  const f=firstKey(); if(!f) return {v:null,count:0};
+  let s=0,c=0;
+  for(let k=1;k<=n;k++){ const p=mShift(y,m,-k), key=mKey(p.y,p.m); if(key<f) break; const e=expMonth(key); s+=cat?(e.byCat[cat]||0):e.total; c++ }
+  return {v:c?s/c:null,count:c};
+}
+function niceMax(v){ if(v<=0) return 1; const p=Math.pow(10,Math.floor(Math.log10(v))); for(const k of [1,2,2.5,5,10]) if(k*p>=v) return k*p; return 10*p }
+function shortBaht(v){ const a=Math.abs(v); return "฿"+(a>=1e6?(v/1e6).toFixed(a>=1e7?0:1)+"M":a>=1e3?(v/1e3).toFixed(a>=1e4?0:1)+"k":Math.round(v)) }
+
+function renderAnalytics(){
+  const v=S.view.analytics, n=new Date(), y=v.y, m=v.m, key=mKey(y,m);
+  const atNow = y===n.getFullYear()&&m===n.getMonth();
+  const dim=daysIn(y,m), lastDay = atNow ? n.getDate() : dim;
+  const cur=expMonth(key);
+  const a6=avgBefore(y,m,6), a12=avgBefore(y,m,12);
+  const nav=`<div class="period"><button type="button" data-step="-1" aria-label="Previous month">‹</button><strong>${MONTHS[m]} ${y}</strong><button type="button" data-step="1" aria-label="Next month" ${atNow?"disabled":""}>›</button></div>`;
+  if(!ofType("expense").length) return `<div class="stack">${nav}<div class="card"><div class="label">Analytics</div><p class="small muted" style="margin:6px 0 0">Charts appear once you've recorded some expenses.</p></div></div>`;
+
+  // Hero: this month vs averages
+  const cmp=(a,label)=>{ if(a.v==null||a.v===0) return `<div class="row"><span class="muted">${label}</span><span class="small muted">not enough history</span></div>`;
+    const d=(cur.total-a.v)/a.v*100, up=d>0;
+    return `<div class="row"><span class="muted">${label}${a.count<(label.includes("12")?12:6)?` <span class="small">(${a.count} mo)</span>`:""}</span><span class="num">${baht(a.v)} <span class="pill ${up?"neg":"pos"}">${up?"▲":"▼"} ${Math.abs(d).toFixed(0)}% ${up?"more":"less"}</span></span></div>` };
+  const hero=`<div class="card"><div class="label">Spent in ${MONTHS[m]}${atNow?" so far":""}</div><div class="big num">${baht(cur.total)}</div>
+    <div class="kv">${cmp(a6,"6-month average")}${cmp(a12,"12-month average")}</div>
+    ${atNow?`<p class="small muted" style="margin:10px 0 0">${MONTHS[m]} isn't over yet, so it will usually look lower than the averages until month end.</p>`:""}</div>`;
+
+  return `<div class="stack">${nav}${hero}${monthlyChart(y,m)}${donut(cur,m)}${facets(y,m,dim,lastDay,cur)}${catTable(y,m,cur)}</div>`;
+}
+
+/* 12 months of spending, with trailing 6- and 12-month averages */
+function monthlyChart(y,m){
+  const f=firstKey(), pts=[];
+  for(let k=11;k>=0;k--){ const p=mShift(y,m,-k), key=mKey(p.y,p.m); pts.push({...p,key,total:expMonth(key).total,pre:f&&key<f}) }
+  const roll=(i,n)=>{ let s=0,c=0; for(let k=0;k<n;k++){ const p=mShift(pts[i].y,pts[i].m,-k), key=mKey(p.y,p.m); if(!f||key<f) break; s+=expMonth(key).total; c++ } return c?s/c:null };
+  pts.forEach((p,i)=>{ p.r6=p.pre?null:roll(i,6); p.r12=p.pre?null:roll(i,12) });
+  const max=niceMax(Math.max(1,...pts.map(p=>Math.max(p.total,p.r6||0,p.r12||0))));
+  const W=340,H=180,L=38,R=6,T=10,B=22,h=H-T-B,w=W-L-R,bw=w/12;
+  const Y=v=>T+h-(v/max)*h, X=i=>L+i*bw+bw/2;
+  let g=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly spending for the 12 months to ${MONTHS[m]} ${y}">`;
+  [0,.5,1].forEach(t=>{ const yy=Y(max*t); g+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}"/><text x="${L-6}" y="${yy+3}" text-anchor="end">${shortBaht(max*t)}</text>` });
+  pts.forEach((p,i)=>{ const bh=Math.max(p.total>0?2:0,(p.total/max)*h), x=L+i*bw+2, sel=i===11;
+    g+=`<path class="bar${sel?"":" dim"}" d="${barPath(x,T+h,bw-4,bh)}"/>`;
+    g+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle"${sel?' class="sel"':""}>${MONTHS[p.m].slice(0,1)}</text>` });
+  const line=(k,cls)=>{ const s=pts.map((p,i)=>p[k]==null?null:[X(i),Y(p[k])]); let d="",on=false; s.forEach(q=>{ if(!q){on=false;return} d+=(on?"L":"M")+q[0].toFixed(1)+","+q[1].toFixed(1); on=true }); return d?`<path class="${cls}" d="${d}"/>`:"" };
+  g+=line("r12","avg12")+line("r6","avg6");
+  pts.forEach((p,i)=>{ g+=`<rect class="hit" data-tip="${esc(MONTHS[p.m]+" "+p.y+": "+baht(p.total)+(p.r6!=null?" · 6-mo avg "+baht(p.r6):"")+(p.r12!=null?" · 12-mo avg "+baht(p.r12):""))}" data-month="${p.m}" data-year="${p.y}" x="${L+i*bw}" y="${T}" width="${bw}" height="${h+B}"/>` });
+  g+="</svg>";
+  return `<div class="card chart"><div class="label">Spending by month</div>
+    <div class="legend"><span><i class="sw bar-sw"></i>Spent</span><span><i class="sw ln6"></i>6-month avg</span><span><i class="sw ln12"></i>12-month avg</span></div>
+    <div class="chart-box">${g}<div class="tip" hidden></div></div>
+    <p class="small muted" style="margin:6px 0 0">Averages are trailing: each point averages that month and the ones before it. Tap a bar to open that month.</p></div>`;
+}
+function barPath(x,base,w,h){ if(h<=0) return ""; const r=Math.min(4,w/2,h); return `M${x},${base}V${base-h+r}Q${x},${base-h} ${x+r},${base-h}H${x+w-r}Q${x+w},${base-h} ${x+w},${base-h+r}V${base}Z` }
+
+/* Share of this month's spending: top 5 categories + Other */
+function donut(cur,m){
+  const rows=Object.entries(cur.byCat).filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1]);
+  if(!rows.length) return `<div class="card"><div class="label">Where it went in ${MONTHS[m]}</div><p class="small muted" style="margin:6px 0 0">No expenses this month yet.</p></div>`;
+  let segs=rows.slice(0,5).map(([c,v])=>({c,v,col:catColor(c)}));
+  const rest=rows.slice(5).reduce((s,e)=>s+e[1],0); if(rest>0) segs.push({c:"Everything else",v:rest,col:"var(--s-other)"});
+  const tot=cur.total, R=60, r=38, C=70; let a0=-Math.PI/2, g=`<svg viewBox="0 0 140 140" class="donut" role="img" aria-label="Share of spending by category">`;
+  if(segs.length===1){ g+=`<circle cx="${C}" cy="${C}" r="${(R+r)/2}" fill="none" stroke="${segs[0].col}" stroke-width="${R-r}"/>` }
+  else segs.forEach(s=>{ const a1=a0+s.v/tot*2*Math.PI, lg=(a1-a0)>Math.PI?1:0, p=(rad,a)=>[C+rad*Math.cos(a),C+rad*Math.sin(a)];
+    const [x0,y0]=p(R,a0),[x1,y1]=p(R,a1),[x2,y2]=p(r,a1),[x3,y3]=p(r,a0);
+    g+=`<path class="seg" fill="${s.col}" data-tip="${esc(s.c+": "+baht(s.v)+" ("+(s.v/tot*100).toFixed(0)+"%)")}" d="M${x0},${y0}A${R},${R} 0 ${lg} 1 ${x1},${y1}L${x2},${y2}A${r},${r} 0 ${lg} 0 ${x3},${y3}Z"/>`; a0=a1 });
+  g+=`<text x="${C}" y="${C-2}" text-anchor="middle" class="dn-big">${shortBaht(tot)}</text><text x="${C}" y="${C+13}" text-anchor="middle">total</text></svg>`;
+  const leg=segs.map(s=>`<div class="lg-row"><i class="sw" style="background:${s.col}"></i><span class="lg-name">${esc(s.c)}</span><span class="num">${baht(s.v)}</span><span class="muted small num lg-pct">${(s.v/tot*100).toFixed(0)}%</span></div>`).join("");
+  return `<div class="card chart"><div class="label">Where it went in ${MONTHS[m]}</div><div class="donut-wrap"><div class="chart-box">${g}<div class="tip" hidden></div></div><div class="lg-list">${leg}</div></div></div>`;
+}
+
+/* Small multiples: cumulative spending per category through the month, against its 6-month average */
+function facets(y,m,dim,lastDay,cur){
+  const key=mKey(y,m), list=cats("expense").map(c=>({c,v:cur.byCat[c]||0,a:avgBefore(y,m,6,c).v||0})).concat(Object.keys(cur.byCat).filter(c=>!cats("expense").includes(c)).map(c=>({c,v:cur.byCat[c],a:avgBefore(y,m,6,c).v||0})))
+    .filter(x=>x.v>0||x.a>0).sort((a,b)=>b.v-a.v||b.a-a.a);
+  if(!list.length) return "";
+  const days=Array.from({length:dim},()=>({}));
+  ofType("expense").forEach(x=>{ if(x.date&&x.date.slice(0,7)===key){ const d=Number(x.date.slice(8,10))-1; days[d][x.category]=(days[d][x.category]||0)+(Number(x.amount)||0) } });
+  const W=160,H=72,L=4,R=4,T=8,B=14,h=H-T-B,w=W-L-R;
+  const cards=list.map(({c,v,a})=>{
+    let cum=0; const pts=[]; for(let d=0;d<lastDay;d++){ cum+=days[d][c]||0; pts.push(cum) }
+    const max=Math.max(1,v,a)*1.08, X=d=>L+(d/(dim-1||1))*w, Y=val=>T+h-(val/max)*h;
+    let path=""; pts.forEach((val,d)=>{ path+=(d?"L":"M")+X(d).toFixed(1)+","+Y(val).toFixed(1) });
+    const over=a>0&&v>a, col=catColor(c);
+    let g=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(c)}: ${baht(v)} spent, 6-month average ${baht(a)}"><line class="grid" x1="${L}" x2="${W-R}" y1="${T+h}" y2="${T+h}"/>`;
+    if(a>0) g+=`<line class="avgref" x1="${L}" x2="${W-R}" y1="${Y(a)}" y2="${Y(a)}"/>`;
+    g+=`<path class="cum" style="stroke:${col}" d="${path}"/>`;
+    if(pts.length) g+=`<circle cx="${X(pts.length-1)}" cy="${Y(pts[pts.length-1])}" r="3.5" class="endpt" style="fill:${col}"/>`;
+    g+=`<text x="${L}" y="${H-2}">1</text><text x="${W-R}" y="${H-2}" text-anchor="end">${dim}</text></svg>`;
+    return `<div class="facet"><div class="row"><span class="facet-name"><i class="sw" style="background:${col}"></i>${esc(c)}</span><span class="num facet-v">${shortBaht(v)}</span></div>${g}
+      <div class="small muted">${a>0?`avg ${shortBaht(a)}${over?` · <span class="neg">${shortBaht(v-a)} over</span>`:""}`:"no history yet"}</div></div>`;
+  }).join("");
+  return `<div class="card"><div class="label">Each category through ${MONTHS[m]}</div>
+    <p class="small muted" style="margin:4px 0 10px">Running total by day. The grey line is that category's 6-month monthly average; crossing it means you've already spent your usual amount.</p>
+    <div class="facets">${cards}</div></div>`;
+}
+
+/* Table view: every number above, in one place */
+function catTable(y,m,cur){
+  const all=new Set([...cats("expense"),...Object.keys(cur.byCat)]);
+  const rows=[...all].map(c=>({c,v:cur.byCat[c]||0,a6:avgBefore(y,m,6,c).v,a12:avgBefore(y,m,12,c).v})).filter(r=>r.v||r.a6||r.a12).sort((a,b)=>b.v-a.v);
+  if(!rows.length) return "";
+  const t=(x)=>x==null?"–":baht(x,1);
+  const tr=rows.map(r=>{ const d=r.a6?((r.v-r.a6)/r.a6*100):null; return `<tr><td>${esc(r.c)}</td><td class="num">${baht(r.v,1)}</td><td class="num">${t(r.a6)}</td><td class="num">${t(r.a12)}</td><td class="num ${d==null?"":d>0?"neg":"pos"}">${d==null?"–":(d>0?"▲":"▼")+Math.abs(d).toFixed(0)+"%"}</td></tr>` }).join("");
+  return `<div class="card"><div class="label" style="margin-bottom:8px">By category</div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Category</th><th>${MONTHS[m].slice(0,3)}</th><th>6-mo avg</th><th>12-mo avg</th><th>vs avg</th></tr></thead><tbody>${tr}</tbody></table></div></div>`;
+}
+
+/* Tooltips for every chart: hover on desktop, tap on phone */
+function bindTips(){
+  main.querySelectorAll(".chart-box").forEach(box=>{
+    const tip=box.querySelector(".tip"); if(!tip) return;
+    const show=(el,e)=>{ const r=box.getBoundingClientRect(); tip.textContent=el.dataset.tip; tip.hidden=false;
+      const tw=tip.offsetWidth, th=tip.offsetHeight, cx=(e.clientX||r.left+r.width/2)-r.left, cy=(e.clientY||r.top)-r.top;
+      tip.style.left=Math.min(Math.max(cx-tw/2,4),r.width-tw-4)+"px"; tip.style.top=(cy-th-12<0?cy+16:cy-th-12)+"px"; box.querySelectorAll(".on").forEach(n=>n.classList.remove("on")); el.classList.add("on") };
+    box.addEventListener("pointermove",e=>{ const el=e.target.closest("[data-tip]"); if(el) show(el,e) });
+    box.addEventListener("pointerdown",e=>{ const el=e.target.closest("[data-tip]"); if(el) show(el,e) });
+    box.addEventListener("pointerleave",()=>{ tip.hidden=true; box.querySelectorAll(".on").forEach(n=>n.classList.remove("on")) });
+  });
 }
 
 function daysUntil(ds){const a=new Date(ds+"T00:00:00"),b=new Date(todayStr()+"T00:00:00");return Math.round((a-b)/864e5)}
@@ -724,7 +897,7 @@ main.addEventListener("click",e=>{
   if(t.dataset.sf){S.savFilter=t.dataset.sf;render();return}
   const v=S.view[S.tab]; if(!v)return;
   if(t.dataset.mode){v.mode=t.dataset.mode;render();return}
-  if(t.dataset.month!==undefined){v.mode="month";v.m=Number(t.dataset.month);render();return}
+  if(t.dataset.month!==undefined){v.mode="month";v.m=Number(t.dataset.month);if(t.dataset.year)v.y=Number(t.dataset.year);render();return}
   if(t.dataset.step){const s=Number(t.dataset.step);if(v.mode==="month"){v.m+=s;if(v.m<0){v.m=11;v.y--}if(v.m>11){v.m=0;v.y++}}else v.y+=s;render()}
 });
 
